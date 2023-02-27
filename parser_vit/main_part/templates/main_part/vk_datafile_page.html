@@ -148,7 +148,7 @@
 		datafile = $.ajax({
 
 			type: "GET",
-			url: `http://127.0.0.1:8000/main/vk_get_additional_datafile/${datafile_id}`,
+			url: `http://localhost:8000/main/vk_get_additional_datafile/${datafile_id}`,
 			success: function(responce){
 				console.log(responce.datafile[0].file_name);
 
