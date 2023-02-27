@@ -1,0 +1,49 @@
+{
+  "response": {
+    "count": 8,
+    "items": [
+      {
+        "id": 133768836,
+        "can_write_private_message": 1,
+        "can_access_closed": true,
+        "is_closed": true
+      },
+      {
+        "id": 192464045,
+        "can_write_private_message": 1,
+        "can_access_closed": true,
+        "is_closed": false
+      },
+      {
+        "id": 214504553,
+        "can_write_private_message": 1,
+        "can_access_closed": true,
+        "is_closed": false
+      },
+      {
+        "id": 276471983,
+        "can_write_private_message": 1,
+        "can_access_closed": true,
+        "is_closed": false
+      },
+      {
+        "id": 349778414,
+        "can_write_private_message": 1,
+        "can_access_closed": true,
+        "is_closed": false
+      },
+      {
+        "id": 364455826,
+        "can_write_private_message": 1,
+        "can_access_closed": true,
+        "is_closed": false
+      },
+      {
+        "id": 429878985,
+        "can_write_private_message": 1,
+        "can_access_closed": true,
+        "is_closed": false
+      }
+    ]
+  }
+}

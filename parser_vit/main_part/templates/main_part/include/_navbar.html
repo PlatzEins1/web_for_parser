@@ -1,0 +1,62 @@
+<nav class="navbar navbar-expand-lg bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Навигация</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href={% url 'main_page' %}>Главная</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href={% url 'data_files_list' 1 %}>Мои файлы с данными</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href={% url 'data_files_list' 2 %}>Общедоступные файлы с данными</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href={% url 'vk_datafile_page' %}>Рабочее место</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="collapse navbar-collapse d-flex justify-content-end" id="navbarSupportedContent">
+    <ul class="nav navbar-nav">
+      {% if request.user.is_authenticated %}
+      <li class="nav-item pull-right">
+        <div id = "user_info">
+        Пользователь: {{request.user.username}}, <a href={% url 'logout' %}>выйти.</a>
+        </div>
+      </li>
+      {% endif %}
+    </ul>
+  </div>
+  <div class="collapse navbar-collapse d-flex justify-content-end" id="navbarSupportedContent">
+    <ul class="nav navbar-nav">
+    
+      <li class="nav-item pull-right">
+        <div>
+        <a class="nav-link active" aria-current="page" href={% url 'about' %} id = "about">О программе</a>
+        </div>
+      </li>
+      
+    </ul>
+  </div>
+</nav>
+
+<style type="text/css">
+  
+  #about {
+
+    white-space: nowrap;
+
+  }
+
+  #user_info{
+
+    white-space: nowrap;
+
+  }
+
+</style>

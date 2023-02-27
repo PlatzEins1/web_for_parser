@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}
+
+Парсинг ВК
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+  <div class="col-md-6">
+
+		<form method="post">
+
+			<div>
+
+				<h3>Опции парсинга</h3>
+
+			    {% csrf_token %}
+			    {{form.as_p}}
+
+				<button type = 'submit' class="btn btn-primary">Далее</button>
+
+			</div>
+
+		</form>
+
+  </div>  
+</div>
+
+{% endblock %}

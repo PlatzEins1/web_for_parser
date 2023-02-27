@@ -1,0 +1,7 @@
+url_search = 'https://api.vk.com/method/groups.search?'
+url_get_users = 'https://api.vk.com/method/groups.getMembers?'
+url_get_by_id = 'https://api.vk.com/method/groups.getById?'
+url_get_members = 'https://api.vk.com/method/groups.getMembers?'
+url_wall_get = 'https://api.vk.com/method/wall.get?'
+url_get_comments = 'https://api.vk.com/method/wall.getComments?'
+url_get_comment = 'https://api.vk.com/method/wall.getComment?'

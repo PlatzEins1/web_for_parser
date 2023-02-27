@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}
+
+Выбор объекта класса
+
+{% endblock %}
+
+{% block content %}
+
+
+<div class="container-fluid">
+  
+  <form method="post">
+
+    {% csrf_token %}
+    <h3>{{page_title}}</h3>
+    {{form.as_p}}
+    
+
+    <button type = 'submit' class="btn btn-primary">Далее</button>
+
+  </form>
+
+</div>
+
+
+
+{% endblock %}
+

@@ -1,0 +1,32 @@
+<div id = "helper">
+
+	<!--<button type="button" class="btn btn-secondary" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="left" data-bs-content="{{help_text}}"> Помощь
+	</button>-->
+
+	<a tabindex="0" class="btn btn-lg btn-secondary btn-sm" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-title="На данной странице:" data-bs-placement="left" data-bs-content="{{help_text}}">Подсказка</a>
+
+</div>
+
+<style type="text/css">
+	
+	#helper {
+
+		position:fixed; 
+		bottom:0%; 
+		right:0%;
+
+	}
+
+</style>
+
+<script type="text/javascript">
+
+	const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+	const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+	
+	const popover = new bootstrap.Popover('.popover-dismiss', {trigger: 'focus'})
+
+</script>
+
+
+

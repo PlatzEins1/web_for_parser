@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}
+
+Парсинг ВК
+
+{% endblock %}
+
+{% block content %}
+
+<form method="post">
+	<div class="row">
+		
+			<div class="col">
+				
+				<h3>Параметры парсинга групп</h3>
+
+			    {% csrf_token %}
+			    {{form_group.as_p}}
+
+			    
+
+			</div>	
+
+			{% if form_users %}
+
+			<div class="col">
+				
+				<h3>Параметры парсинга Пользователей</h3>
+
+			    {% csrf_token %}
+			    {{form_users.as_p}}
+
+			    
+
+			</div>	
+
+			{% endif %}
+			<div class="col">
+
+				
+				
+			</div>
+		
+	</div>
+	<button type = 'submit' class="btn btn-primary" name='group_vk_button'>Далее</button>
+</form>
+
+{% endblock %}

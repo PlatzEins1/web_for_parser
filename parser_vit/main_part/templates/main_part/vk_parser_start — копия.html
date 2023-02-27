@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Парсинг ВК
+{% endblock %}
+
+{% block content %}
+
+<div>
+	<h3>Выбор файла с данными</h3>
+	<form method="post">
+	        {% csrf_token %}
+	        {{form_object.as_p}}
+			<button type = 'submit' class="btn btn-primary">Войти</button>
+	</form>
+
+</div>
+
+<div>
+	<h3>Вставьте ссылку на сообщество</h3>
+	<form method="post">
+	        {% csrf_token %}
+	        {{form_url.as_p}}
+			<!--<button type = 'submit' class="btn btn-primary">Войти</button>
+	</form>-->
+</div>
+
+<div>
+	<h3>Поиск по слову</h3>
+	<form method="post">
+	        {% csrf_token %}
+	        {{form_word.as_p}}
+			<!--<button type = 'submit' class="btn btn-primary">Войти</button>
+	</form>-->
+</div>
+
+{% endblock %}

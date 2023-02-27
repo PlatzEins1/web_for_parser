@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
+{% endblock %}
+
+{% block title %}
+
+Файл данных
+
+{% endblock %}
+
+{% block content %}
+
+<hr>
+
+<div id="adding_files" class="container-fluid">
+	
+	<div class="dropdown">
+
+		<button id = "available datafiles" onclick="get_available_datafiles ()" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Добавить файл с данными</button>
+
+		<ul id = "datafiles_list" class="dropdown-menu">
+
+		</ul>
+	</div>
+
+</div>
+
+<hr>
+
+<div id = "selected_datafiles" class = "container-fluid">
+
+	<!--<h5>Выбранные для работы файлы с данными</h5>-->
+	
+	{% if prefixed_datafile_id %}
+
+		<button id = "label{{prefixed_datafile_id}}" onclick="selected_datafile_onclick({{prefixed_datafile_id}})" type="button" class="btn btn-link">
+		{{prefixed_datafile_name}} 
+		</button>
+		<button type="button" class="btn-close" id = "label{{prefixed_datafile_id}}" onclick="close_datafile('label{{prefixed_datafile_id}}')" aria-label="Close"></button>
+
+	{% endif %}
+
+</div>
+
+<div class="container-fluid">
+
+	<button onclick="data_graph	()">Бар</button>
+
+	<button onclick="audience_intersection ()">Пересечение аудитории сообществ</button>
+
+</div>
+
+<div id="graph_options" class="container-fluid">
+
+
+
+</div>
+
+<div class="container-fluid">
+
+	<div>
+    <canvas id="data_graph"></canvas>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <script>
+
+  	function data_graph(){
+
+  	const ctx = document.getElementById('data_graph');
+  
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        datasets: [{
+          label: '# of Votes',
+          data: [12, 19, 3, 5, 2, 3],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+  	};
+
+
+  </script>
+
+</div>
+
+<script type="text/javascript">
+
+	function get_available_datafiles() {
+
+		dropdown_list = document.getElementById("datafiles_list");
+
+		datafiles = $.ajax({
+
+			type: 'GET',
+			url: "{% url 'vk_available_datafiles' %}",
+			success: function(responce){
+
+				dropdown_list.innerHTML = ''
+
+				for (datafile of responce.datafiles){
+
+					dropdown_list.insertAdjacentHTML(
+
+					"beforeend",
+					`<li><button id = "${datafile.id}" onclick="datafile_on_select(${datafile.id})"">${datafile.file_name}</button></li>`
+
+					)
+				}
+
+			},
+			error: function(responce){
+
+				dropdown_list.innerHTML = ''
+
+				dropdown_list.insertAdjacentHTML(
+
+					"beforeend",
+
+					`Произошла ошибка при обновлении списка доступных файлов с жанными`
+
+				)
+			}
+		});
+	}
+
+	function datafile_on_select(datafile_id){
+
+
+		selected_datafiles_list = document.getElementById("selected_datafiles")
+
+		datafile = $.ajax({
+
+			type: "GET",
+			url: `http://127.0.0.1:8000/main/vk_get_additional_datafile/${datafile_id}`,
+			success: function(responce){
+				console.log(responce.datafile[0].file_name);
+
+				selected_datafiles_list.insertAdjacentHTML(
+
+					"beforeend",
+					`	<button id = "label${responce.datafile[0].id}" onclick="selected_datafile_onclick(${responce.datafile[0].id})" type="button" class="btn btn-link">
+						${responce.datafile[0].file_name} 
+						</button>
+						<button type="button" class="btn-close" id = "label${responce.datafile[0].id}" onclick="close_datafile('label${responce.datafile[0].id}')" aria-label="Close"></button>`,
+
+				)
+
+			},
+			error: function(responce){
+
+				console.log("Не удалось получить файл");
+
+			},
+		})
+
+
+
+	}
+
+	function selected_datafile_onclick(datafile_id){
+
+		console.log(`Клик на датафайл ид ${datafile_id}`)
+
+
+	}
+
+	function close_datafile(datafile_id){
+
+		selected_area = document.getElementById(`${datafile_id}`)
+		
+		selected_area.remove()
+
+		selected_area = document.getElementById(`${datafile_id}`)
+		
+		selected_area.remove()
+
+	}
+
+</script>
+
+<script type="text/javascript">
+	
+	function audience_intersection () {
+		
+
+		let ids_string = ''
+
+		selected_datafiles_list = document.getElementById("selected_datafiles")
+
+		datafiles = selected_datafiles_list.getElementsByClassName("btn-close")
+
+
+		for (let item of datafiles) {
+
+
+			ids_string += item['id'].slice(5)
+
+			ids_string += ','
+
+
+		}
+
+		ref = window.location.href;
+
+		ref = ref.slice(0, ref.indexOf('vk_datafile_page'))
+
+		ref += `vk_audience_intersection/${ids_string}`
+
+
+		console.log(ref);
+		console.log(ids_string)
+		console.log(typeof ids_string)
+
+		/*
+		intersection = $.ajax({
+
+			type: "GET",
+			url: ref,
+			success: function(responce){
+
+				console.log('успех')
+
+				window.open(ref)
+
+				
+
+			},
+			error: function(responce){
+
+				console.log("Не удалось получить файл");
+
+			},
+		})
+		*/
+
+		window.open(ref)
+
+	}
+
+</script>
+
+{% endblock %}
