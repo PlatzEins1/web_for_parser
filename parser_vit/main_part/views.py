@@ -680,9 +680,12 @@ def vk_user_start(request):
 			reader = csv.reader(io_string, delimiter=',')
 			user_ids = ''
 			for line in reader:
-				if line[1] == '0':
+				print(line)
+				if len(line)>1:
+					line.pop(0)
+				if line[0] == '0':
 					continue
-				user_ids +=line[1]
+				user_ids +=line[0]
 				user_ids += ','
 			#print(str(datetime.datetime.now().timestamp()).split('.')[0])
 
@@ -778,7 +781,12 @@ def parse_options_users(request):
 					for id in user_ids:
 						params['user_id'] = id
 						vk_request = requests.get('https://api.vk.com/method/users.getSubscriptions?', params=params)
+						print(vk_request.json())
+						if 'error' in vk_request.json():
+							if vk_request.json()['error']['error_msg'] == 'This profile is private' or vk_request.json()['error']['error_msg'] == 'User was deleted or banned':
+								continue
 						data['items'].update({id: vk_request.json()['response']['items']})
+						time.sleep(1)
 
 					os.remove(temp_path)
 
@@ -799,3 +807,67 @@ def parse_options_users(request):
 	}
 
 	return render(request, 'main_part/vk_parse_options_users.html', context)
+
+def geting_not_closed_users(request, datafile_id):
+	datafile = data_file.objects.get(pk=datafile_id)
+	with open(datafile.data.path) as data:
+		users = json.load(data)
+		#print(type(users))
+		try:
+			token = get_user_token(request.user, url_for_token)
+		except:
+			print(Exception.with_traceback())
+
+		params = {
+			'access_token': token,
+			'v': '5.131',
+			'fields': 'is_closed',
+		}
+		number_of_requests = len(users['items'])//1000
+		if len(users['items'])%1000 != 0:
+			number_of_requests += 1
+
+		closed_pages = []
+
+		for i in range(number_of_requests):
+
+			if i == number_of_requests:
+
+				start = i * 1000
+				end = len(users['items']) - 1
+
+				user_ids = ','.join(str(id) for id in users['items'][start:end])
+				params['user_ids'] = user_ids
+
+				request_vk = requests.get(
+					'https://api.vk.com/method/users.get?', params=params)
+
+				# print(request.json())
+
+				for item in request_vk.json()['response']:
+					if item['is_closed'] == True:
+						closed_pages.append(item['id'])
+
+				continue
+
+
+			start = i * 1000
+			end = (i+1) * 1000-1
+			user_ids = ','.join(str(id) for id in users['items'][start:end])
+			params['user_ids'] = user_ids
+
+			request_vk = requests.get(
+				'https://api.vk.com/method/users.get?', params=params)
+
+			#print(request.json())
+
+			for item in request_vk.json()['response']:
+				if item['is_closed'] == True:
+					closed_pages.append(item['id'])
+
+		#print(closed_pages)
+
+		for closed_page in closed_pages:
+			users['items'].remove(closed_page)
+
+		return create_datafile(request.user, users)

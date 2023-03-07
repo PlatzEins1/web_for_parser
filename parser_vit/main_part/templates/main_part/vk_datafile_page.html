@@ -52,6 +52,8 @@
 
 	<button onclick="audience_intersection ()">Пересечение аудитории сообществ</button>
 
+	<button onclick="Open_users ()">Открытые страницы</button>
+
 </div>
 
 <div id="graph_options" class="container-fluid">
@@ -206,6 +208,8 @@
 
 		datafiles = selected_datafiles_list.getElementsByClassName("btn-close")
 
+		console.log(datafiles)
+
 
 		for (let item of datafiles) {
 
@@ -224,9 +228,9 @@
 		ref += `vk_audience_intersection/${ids_string}`
 
 
-		console.log(ref);
-		console.log(ids_string)
-		console.log(typeof ids_string)
+		//console.log(ref);
+		//console.log(ids_string)
+		//console.log(typeof ids_string)
 
 		/*
 		intersection = $.ajax({
@@ -251,6 +255,33 @@
 		*/
 
 		window.open(ref)
+
+	}
+
+</script>
+
+<script type="text/javascript">
+	
+	function Open_users(){
+
+		selected_datafiles_list = document.getElementById("selected_datafiles")
+
+		datafile = selected_datafiles_list.getElementsByClassName("btn-close")
+
+		//console.log(datafile)
+
+		id = datafile[0]['id'].slice(5)
+
+		//console.log(id)
+
+		ref = window.location.href;
+
+		ref = ref.slice(0, ref.indexOf('vk_datafile_page'))
+
+		ref += `geting_not_closed_users/${id}`
+
+		window.open(ref)
+
 
 	}
 
