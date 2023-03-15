@@ -5,8 +5,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import datetime
 from .models import app_user
-
-url_for_token = 'https://oauth.vk.com/authorize?client_id=51434932&redirect_uri=https%3A%2F%2Foauth.vk.com%2Fblank.html&display=page&scope=wall%2Coffline%2Cgroups%2Cfriends&response_type=token&v=5.131'
+from url_for_token import url_for_token #Строка токена
 
 
 def get_user_token(user, url_for_token):
