@@ -1,0 +1,1 @@
+url_for_token = 'https://oauth.vk.com/authorize?client_id=51434932&redirect_uri=https%3A%2F%2Foauth.vk.com%2Fblank.html&display=page&scope=wall%2Coffline%2Cgroups%2Cfriends&response_type=token&v=5.131'

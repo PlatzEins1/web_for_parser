@@ -5,6 +5,7 @@ import io
 import time
 import pandas as pd
 import os
+import rest_framework
 import requests
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
@@ -18,6 +19,8 @@ from .forms import user_login_form, vk_start_form_file_select, vk_start_form_url
 	vk_datafile_attrs, parse_user_suboptions, parse_in_users_main
 from .models import data_file, user_intersection_file
 from .sel_sub import get_user_token, url_for_token
+
+from .serializers.serializers import DataFilesSerializer
 
 @login_required()
 def main(request):
@@ -807,6 +810,15 @@ def parse_options_users(request):
 	}
 
 	return render(request, 'main_part/vk_parse_options_users.html', context)
+
+def Datafiles_list(request):
+	if request.method == 'GET':
+		user = request.user
+		datafiles = data_file.objects.filter(user=user.app_user)
+		serializer = DataFilesSerializer(datafiles, many=True)
+		#print(dir(serializer.data))
+		return JsonResponse(serializer.data, safe=False, json_dumps_params={'ensure_ascii': False})
+
 
 def geting_not_closed_users(request, datafile_id):
 	datafile = data_file.objects.get(pk=datafile_id)

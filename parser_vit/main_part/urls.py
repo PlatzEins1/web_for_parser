@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import main, login_user, vk_group_start, vk_data_operations, parse_options, parse_options_groups, user_logout, data_files_list,  \
 	getting_access_token, vk_parse_subject, group_parce_options, vk_adding_file, vk_datafile_page, vk_available_datafiles, vk_get_additional_datafile, \
-	vk_parse_groups_suboptions, vk_parse_user_suboptions, vk_audience_intersection, about, vk_user_start, parse_options_users, geting_not_closed_users
+	vk_parse_groups_suboptions, vk_parse_user_suboptions, vk_audience_intersection, about, vk_user_start, parse_options_users, geting_not_closed_users, Datafiles_list
 
 urlpatterns = [
 	path('', main, name = 'main_page'),
@@ -26,6 +26,7 @@ urlpatterns = [
 	path('vk_user_start', vk_user_start, name='vk_user_start'),
 	path('parse_options_users', parse_options_users, name='parse_options_users'),
 	path('geting_not_closed_users/<int:datafile_id>', geting_not_closed_users, name='geting_not_closed_users'),
+	path('drf_datafiles', Datafiles_list, name='Datafiles_list'),
 
 
 	#path('donations', name = 'donations_page'),
