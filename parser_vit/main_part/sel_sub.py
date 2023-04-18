@@ -5,7 +5,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import datetime
 from .models import app_user
-from url_for_token import url_for_token #Строка токена
+from .url_for_token import url_for_token #Строка токена
 
 
 def get_user_token(user, url_for_token):

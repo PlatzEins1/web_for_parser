@@ -1,3 +1,4 @@
+import math
 import json
 import csv
 import datetime
@@ -133,18 +134,16 @@ def vk_group_start(request): #выбор источника данных для 
 		'''
 		file = request.FILES['file']
 		decoded_file = file.read().decode('utf-8')
-		#print(decoded_file)
+
 		io_string = io.StringIO(decoded_file)
 		reader = csv.reader(io_string, delimiter=',')
-		#print(reader)
-		print(dir(reader))
+
 		group_ids = ''
 		for line in reader:
 			if line[0] == '0':
 				continue
 			group_ids += line[0]
 			group_ids += ','
-		# print(str(datetime.datetime.now().timestamp()).split('.')[0])
 
 		new_temp_name = str(request.user.app_user.pk) + '_' + \
 		                str(datetime.datetime.now().timestamp()).split('.')[0] + '.txt'
@@ -155,8 +154,6 @@ def vk_group_start(request): #выбор источника данных для 
 		with open(temp_path, 'w', encoding='utf-8') as f:
 			f.write(group_ids)
 
-		# print(temp_path)
-		# pass
 		response = redirect('parse_options_groups')
 		response['Location'] += f'?token={token}&temp_file={new_temp_name}'
 		return response
@@ -242,13 +239,12 @@ def parse_options(request):  #parameters from vk pages of users and groups 3
 def parse_options_groups(request): #парсинг групп
 	if request.method == 'POST':
 
-		group = request.GET.get('url')
+		group = request.GET.get('url', 0)
 		token = request.GET.get('token')
 		form = parse_in_groups_main(request.POST)
-		temp_file = request.GET.get('temp_file', '')
+		temp_file = request.GET.get('temp_file', 0)
 
 		if form.is_valid():
-
 
 			option = request.POST['parse_option']
 
@@ -267,45 +263,131 @@ def parse_options_groups(request): #парсинг групп
 
 				case "posts":
 
-					params = {
-						'domain': request.GET.get('url'),  # + ',uvoleno',
-						'count': 1,
-						'offset': 0,
-						'access_token': request.GET.get('token'),
-						'v': '5.131',
-					}
+					token=request.GET.get('token')
 
-					request_for_counter = requests.get(
-						'https://api.vk.com/method/wall.get?', params=params)
+					if temp_file:
 
-					group_id = request_for_counter.json()['response']['items'][0]['from_id']
+						temp_path = os.path.join(os.path.dirname(__file__), 'data_files_folder',
+												 'temporary_groups_ids_files', temp_file)
 
-					params['count'] = 100
+						with open(temp_path, 'r', encoding='utf-8') as f:
+							group_ids = f.readlines()[0][:-1].split(
+								',')  # читается файл, берется первая строка, в которую и записаны данные, у нее отбрасывается последний знак-запятая, и генерируется массив идентификаторов
 
-					counter = request_for_counter.json()['response']['count']
-					data = {
-							"count": counter,
-							"items": [],
-					}
-					for i in range(round(counter / 100)):
-						vk_request = requests.get(
+						#print(group_ids)
+
+						data = {
+							"items": {},
+						}
+
+						for id in group_ids:
+							group_id = id.split('https://vk.com/')[1]
+							print(group_id)
+							params = {
+								'domain': group_id,
+								'count': 1,
+								'offset': 0,
+								'access_token': token,
+								'v': '5.131',
+							}
+
+							request_for_counter = requests.get(
+								'https://api.vk.com/method/wall.get?', params=params)
+
+							params['count'] = 100
+
+							#owner_id = request_for_counter.json()['response']['items'][0]['from_id']
+
+							data['items'][str(group_id)]=[]
+							print('каунтер', request_for_counter.json())
+							#if 'error' in request_for_counter.json():
+								#time.sleep(5)
+
+							while 'error' in request_for_counter.json():
+								time.sleep(5)
+								request_for_counter = requests.get(
+									'https://api.vk.com/method/wall.get?', params=params)
+
+							counter = request_for_counter.json()['response']['count']
+
+
+							for i in range(math.ceil(counter / 100)):
+								print(counter)
+								print("сеил", math.ceil(counter / 100))
+								vk_request = requests.get(
+									'https://api.vk.com/method/wall.get?', params=params)
+								if 'error' in vk_request.json():
+									print(vk_request.json())
+									while vk_request.json()['error']['error_msg'] == 'Too many requests per second':
+										time.sleep(5)
+										vk_request = requests.get(
+											'https://api.vk.com/method/wall.get?', params=params)
+								data['items'][group_id].extend(vk_request.json()['response']['items'])
+								params['offset'] = 100 * (i + 1)
+								print(vk_request.json()['response']['items'], '\n')
+								time.sleep(1)
+
+							for post in data['items'][group_id]:
+								print(post['owner_id'], post['id'])
+								sub_params = {
+									'owner_id': post['owner_id'],
+									'access_token': token,
+									'post_id': post['id'],
+									'v': '5.131',
+								}
+								comments_request = requests.get('https://api.vk.com/method/wall.getComments?',
+																params=sub_params)
+								post['comments_list'] = comments_request.json()
+
+						time.sleep(2)
+
+						#print(data['items'])
+
+						os.remove(temp_path)
+
+						return create_datafile(request.user, data)
+
+					if group:
+
+						params = {
+							'domain': request.GET.get('url'),  # + ',uvoleno',
+							'count': 1,
+							'offset': 0,
+							'access_token': token,
+							'v': '5.131',
+						}
+
+						request_for_counter = requests.get(
 							'https://api.vk.com/method/wall.get?', params=params)
 
-						data['items'].extend(vk_request.json()['response']['items'])
-						params['offset'] = 100 * (i + 1)
+						group_id = request_for_counter.json()['response']['items'][0]['from_id']
 
-					sub_params = {
-						'owner_id': group_id,
-						'access_token': request.GET.get('token'),
-						'v': '5.131',
-					}
+						params['count'] = 100
 
-					for post in data['items']:
-						sub_params['post_id'] = post['id']
-						comments_request = requests.get('https://api.vk.com/method/wall.getComments?', params=sub_params)
-						post['comments_list'] = comments_request.json()
+						counter = request_for_counter.json()['response']['count']
+						data = {
+								"count": counter,
+								"items": [],
+						}
+						for i in range(round(counter / 100)):
+							vk_request = requests.get(
+								'https://api.vk.com/method/wall.get?', params=params)
 
-					return create_datafile(request.user, data)
+							data['items'].extend(vk_request.json()['response']['items'])
+							params['offset'] = 100 * (i + 1)
+
+						sub_params = {
+							'owner_id': group_id,
+							'access_token': token,
+							'v': '5.131',
+						}
+
+						for post in data['items']:
+							sub_params['post_id'] = post['id']
+							comments_request = requests.get('https://api.vk.com/method/wall.getComments?', params=sub_params)
+							post['comments_list'] = comments_request.json()
+
+						return create_datafile(request.user, data)
 
 	else:
 
