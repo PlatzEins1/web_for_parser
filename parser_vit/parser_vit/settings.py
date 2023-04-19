@@ -38,11 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main_part.apps.MainPartConfig',
- #   'rest_framework ',
-
-    #приложения для дэшборда
-   # 'dash',
-
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

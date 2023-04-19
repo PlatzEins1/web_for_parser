@@ -6,7 +6,7 @@ import io
 import time
 import pandas as pd
 import os
-import rest_framework
+from rest_framework import generics
 import requests
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
@@ -965,3 +965,7 @@ def geting_not_closed_users(request, datafile_id):
 			users['items'].remove(closed_page)
 
 		return create_datafile(request.user, users)
+
+class  datafiles(generics.ListCreateAPIView):
+	queryset =data_file.objects.all()
+	serializer_class = DataFilesSerializer
