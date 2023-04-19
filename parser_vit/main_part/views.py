@@ -7,6 +7,7 @@ import time
 import pandas as pd
 import os
 from rest_framework import generics
+import rest_framework.mixins as drf_mixins
 import requests
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
@@ -22,6 +23,13 @@ from .models import data_file, user_intersection_file
 from .sel_sub import get_user_token, url_for_token
 
 from .serializers.serializers import DataFilesSerializer
+
+
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+
 
 @login_required()
 def main(request):
@@ -966,6 +974,10 @@ def geting_not_closed_users(request, datafile_id):
 
 		return create_datafile(request.user, users)
 
-class  datafiles(generics.ListCreateAPIView):
-	queryset =data_file.objects.all()
+class datafile_list(generics.ListCreateAPIView):
+	queryset = data_file.objects.all()
+	serializer_class = DataFilesSerializer
+
+class datafile_detail(generics.RetrieveAPIView):
+	queryset = data_file.objects.all()
 	serializer_class = DataFilesSerializer
